@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "WCbnoAhxnGcq1gGv8JVV79of9QhUxFGHku681fR1RW8Ly31BadH44zjc/ZUPSowg6BE1UU34pBOYDhweTUeUgw==",
+  "success": true,
+  "projectFilePath": "/run/media/fizlrock/DATA/Docs/backup/code_backup/university/csharp_parser/ParserCore/ParserCore.csproj",
+  "expectedPackageFiles": [
+    "/home/fizlrock/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.11/microsoft.aspnetcore.app.ref.7.0.11.nupkg.sha512"
+  ],
+  "logs": []
+}

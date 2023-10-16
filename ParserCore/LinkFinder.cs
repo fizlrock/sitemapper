@@ -5,63 +5,55 @@ namespace ParserCore;
 
 public class LinkFinder
 {
-    private static readonly string[] image_extensions = { ".png", ".PNG", ".jpeg", ".JPEG", ".webp", ".jpg", ".JPG", ".svg" };
-    private static Regex validate_url_pattern = new Regex(@"^(?'protocol'https?:\/\/)?(?'domain'[a-zA-Z.0-9-_]+)(\/[a-zA-Z0-9-_?]+)*(?'filetype'\.\S{1,4})?\/?$");
+    private static readonly string[] image_extensions = { "png", "PNG", "jpeg", "JPEG", "webp", "jpg", "JPG", "svg" };
+    private static Regex validate_url_regex = new Regex(@"[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&%\$#_]*)?$");
+    private static Regex absolute_url_regex = new Regex(@"(src|href|content)=""(?'url'(?'domain_with_protocol'(https?:\/\/)?(?:www\.)?([-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b))?(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*))""");
 
 
-    public HashSet<Link> findLinks(string html)
+    public HashSet<Link> findLinks(string html, string url)
     {
         throw new NotImplementedException();
     }
 
-    private List<Link> validateAndSortLinks(HashSet<string> urls, string root_domain, string source)
+    public List<Link> sortLinks(HashSet<string> links, string domain_short_link)
     {
-        List<Link> links = new List<Link>();
+        List<Link> sorted_links = new List<Link>();
 
 
-        Match domain_m = validate_url_pattern.Match(root_domain);
-        string trimed_domain_url = domain_m.Groups["domain"].Value;
-
-        foreach (string url in urls)
+        foreach (string url in links)
         {
-            Match urlm = validate_url_pattern.Match(url);
             LinkType type = LinkType.External;
             LinkContentType contentType = LinkContentType.None;
+						string maybe_domain = url.Split('/')[0];
+						string extension = url.Split('.').Last();
 
-            if (urlm.Success)
+            if (!String.IsNullOrWhiteSpace(maybe_domain) && maybe_domain == domain_short_link)
+                type = LinkType.Domain;
+
+
+            if (extension.Length < 5 && !extension.Equals("html"))
             {
-                string url_domain = urlm.Groups["domain"].Value;
-                string extension = urlm.Groups["filetype"].Value;
-                if (!String.IsNullOrWhiteSpace(url_domain) && url_domain == trimed_domain_url)
-                    type = LinkType.Domain;
-
-                if (!String.IsNullOrWhiteSpace(extension))
-                {
-                    contentType = LinkContentType.Unknown;
-                    if (image_extensions.Contains(extension))
-                        contentType = LinkContentType.Image;
-                }
+                contentType = LinkContentType.Unknown;
+                if (image_extensions.Contains(extension))
+                    contentType = LinkContentType.Image;
             }
 
-            links.Add(new Link() { URL = url, Type = type, ContentType = contentType });
+            sorted_links.Add(new Link() { URL = url, Type = type, ContentType = contentType });
         }
 
-        return links;
+        return sorted_links;
     }
 
 
 
 
 
-    private HashSet<string> findAndFormatUrls(string html, string source)
+    public HashSet<string> findAndFormatUrls(string html, string source)
     {
-
-        const string absolute_url_pattern = @"(src|href|content)=""(?'url'(?'domain_with_protocol'(https?:\/\/)?(?:www\.)?([-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b))?(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*))""";
-
-        MatchCollection matches = null;
-        matches = Regex.Matches(html, absolute_url_pattern);
+        MatchCollection matches = absolute_url_regex.Matches(html);
 
         HashSet<string> raw_urls = matches.Select(m => m.Groups["url"].Value).ToHashSet();
+
 
 
         // Приведение вида ссылок относительного к абсолютному /abs => https://ssau.ru/abs
@@ -74,22 +66,21 @@ public class LinkFinder
         raw_urls.ExceptWith(defected);
         raw_urls.UnionWith(defected.Select(x => "https:" + x));
 
-        // На всякий случай ещё несколько преобразований. да перебор. да работает. оптимизирую потом
-        /*
-var temp = raw_urls.Where(x => x.Length > 2);
+        // Чистим дубли и мусор, приводим к стандартному виду
+        var temp = raw_urls.Where(x => x.Length > 2);
+        temp = temp
+            .Where(x => x.StartsWith("http"))
+            .Select(x => x.Split("//")[1]);
 
-temp = temp
-    .Where(x => x.StartsWith("http"))
-    .Select(x => x.Split("//")[1]);
+        temp = temp.Select(x => x.TrimEnd('/'));
 
-temp = temp.Select(x => x.TrimEnd('/'));
+        temp = temp.OrderBy(l => l.Length).Select(x => x);
+        raw_urls = temp.ToHashSet();
 
-temp = temp.OrderBy(l => l.Length).Select(x => x);
-raw_urls = temp.ToHashSet();
 
-        */
-        const string validate_pattern = @"[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&%\$#_]*)?$";
-        return raw_urls.Where(x => Regex.IsMatch(x, validate_pattern)).ToHashSet();
+        raw_urls.Where(x => validate_url_regex.IsMatch(x)).ToHashSet();
+
+        return raw_urls;
     }
 
 

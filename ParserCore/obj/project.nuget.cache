@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "WCbnoAhxnGcq1gGv8JVV79of9QhUxFGHku681fR1RW8Ly31BadH44zjc/ZUPSowg6BE1UU34pBOYDhweTUeUgw==",
+  "dgSpecHash": "uojjIQ1wULYYZvmBjSQVlT7Qcaei9Fz81Di0fMuXqdKsDq6tskuP5MWdP+leLOHXmWgwELAqkpMKXRH+BB/iqg==",
   "success": true,
-  "projectFilePath": "/run/media/fizlrock/DATA/Docs/backup/code_backup/university/csharp_parser/ParserCore/ParserCore.csproj",
+  "projectFilePath": "/home/fizlrock/datadrive/Docs/backup/code_backup/university/csharp_parser/ParserCore/ParserCore.csproj",
   "expectedPackageFiles": [
+    "/home/fizlrock/.nuget/packages/anglesharp/1.0.4/anglesharp.1.0.4.nupkg.sha512",
+    "/home/fizlrock/.nuget/packages/system.text.encoding.codepages/7.0.0/system.text.encoding.codepages.7.0.0.nupkg.sha512",
     "/home/fizlrock/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.11/microsoft.aspnetcore.app.ref.7.0.11.nupkg.sha512"
   ],
   "logs": []

@@ -10,12 +10,9 @@ public class LinkFinder
     private static Regex absolute_url_regex = new Regex(@"(src|href|content)=""(?'url'(?'domain_with_protocol'(https?:\/\/)?(?:www\.)?([-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b))?(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*))""");
 
 
-    public HashSet<Link> findLinks(string html, string url)
-    {
-        throw new NotImplementedException();
-    }
+    
 
-    public List<Link> sortLinks(HashSet<string> links, string domain_short_link)
+    public static List<Link> sortLinks(HashSet<string> links, string domain_short_link)
     {
         List<Link> sorted_links = new List<Link>();
 
@@ -24,8 +21,8 @@ public class LinkFinder
         {
             LinkType type = LinkType.External;
             LinkContentType contentType = LinkContentType.None;
-						string maybe_domain = url.Split('/')[0];
-						string extension = url.Split('.').Last();
+            string maybe_domain = url.Split('/')[0];
+            string extension = url.Split('.').Last();
 
             if (!String.IsNullOrWhiteSpace(maybe_domain) && maybe_domain == domain_short_link)
                 type = LinkType.Domain;
@@ -48,7 +45,7 @@ public class LinkFinder
 
 
 
-    public HashSet<string> findAndFormatUrls(string html, string source)
+    public static HashSet<string> findAndFormatUrls(string html, string source)
     {
         MatchCollection matches = absolute_url_regex.Matches(html);
 
@@ -77,10 +74,30 @@ public class LinkFinder
         temp = temp.OrderBy(l => l.Length).Select(x => x);
         raw_urls = temp.ToHashSet();
 
-
-        raw_urls.Where(x => validate_url_regex.IsMatch(x)).ToHashSet();
+        // raw_urls.Where(x => validate_url_regex.IsMatch(x)).ToHashSet();
 
         return raw_urls;
+    }
+
+
+
+    public static List<string> getDomainLinks(string html, string url, string domain_url)
+    {
+				//Console.WriteLine($"url: <{url}>, domain: <{domain_url}>");
+        var links = findAndFormatUrls(html, url);
+        var sorted_links = sortLinks(links, domain_url);
+
+
+        //Console.WriteLine(String.Join("\n", links));
+
+        var finded_domain_links = sorted_links
+            .Where(l => l.Type == LinkType.Domain)
+            .Where(l => l.ContentType == LinkContentType.None)
+            .Select(l => l.URL);
+				return finded_domain_links.ToList();
+
+
+
     }
 
 

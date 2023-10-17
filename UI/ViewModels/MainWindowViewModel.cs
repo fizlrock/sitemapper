@@ -10,7 +10,7 @@ namespace UI.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
 
-    private Regex url_validate_pattern = new Regex("^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$");
+    private Regex url_validate_pattern = new Regex("^[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$");
 
     private int _RPMLimit;
     private Parser parser;

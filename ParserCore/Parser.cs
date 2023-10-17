@@ -5,18 +5,17 @@ public class Parser
 {
     public Parser()
     {
-        client = new HttpClient();
-        client.Timeout = TimeSpan.FromSeconds(2); ;
+        pd = new PageDownloader();
         Reset();
-        last_request = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         PageLimit = 100;
         RPM = 60;
 
     }
 
+    private PageDownloader pd;
     private static Regex validate_url_pattern = new Regex(@"^(?'protocol'https?:\/\/)?(?'domain'[a-zA-Z.0-9-_]+)(\/[a-zA-Z0-9-_?]+)*(?'filetype'\.\S{1,4})?\/?$");
     private ParserStatus _status;
-    public ParserStatus status
+    public ParserStatus Status
     {
         get => _status;
         private set
@@ -32,7 +31,7 @@ public class Parser
         visited = new HashSet<string>();
         DomainTree = new HashSet<string>();
         DomainImages = new HashSet<string>();
-        status = ParserStatus.Waiting;
+        Status = ParserStatus.Waiting;
         root_url = "";
         Graph = new List<Link>();
 
@@ -46,10 +45,8 @@ public class Parser
     public HashSet<string> DomainTree { private set; get; }
     public HashSet<string> DomainImages { private set; get; }
 
-    private HttpClient client;
 
 
-    private long last_request;
 
     public delegate void UIMessage(string message);
     public delegate void StatusChangedMessage(ParserStatus status);
@@ -68,10 +65,10 @@ public class Parser
     {
         set
         {
-            if (status != ParserStatus.Waiting)
+            if (Status != ParserStatus.Waiting)
                 throw new Exception("Редактирование настроек допустимо только в режиме ожидания");
             var m = validate_url_pattern.Match(value);
-            if ((!m.Success || status == ParserStatus.Paused))
+            if ((!m.Success || Status == ParserStatus.Paused))
                 throw new ArgumentException("Переданная строка не является URL");
             Reset();
             root_url = value;
@@ -80,13 +77,16 @@ public class Parser
         get => root_url;
     }
 
-    private int page_limit;
+
+
+
+
     public int PageLimit
     {
         get => page_limit;
         set
         {
-            if (status != ParserStatus.Waiting)
+            if (Status != ParserStatus.Waiting)
                 throw new Exception("Редактирование настроек допустимо только в режиме ожидания");
             if (value <= 0)
                 throw new ArgumentException("Ограничение на кол-во посещенных страниц должно быть больше нуля");
@@ -94,76 +94,99 @@ public class Parser
         }
     }
 
-    private int request_delay; // Время между запросами в мс
+    private int page_limit;
     public int RPM
     {
         get
         {
-            return (int)(1 / ((double)request_delay / 60000));
+            return (int)(1 / ((double)pd.requestDelay / 60000));
         }
         set
         {
-            if (status != ParserStatus.Waiting)
+            if (Status != ParserStatus.Waiting)
                 throw new Exception("Редактирование настроек допустимо только в режиме ожидания");
             if (value <= 0)
                 throw new ArgumentException("Ограничение на кол-во запросов в минуту должно быть больше нуля");
-            request_delay = 60000 / value;
-            Console.WriteLine($"RPM changed: {value}");
+            pd.requestDelay = 60000 / value;
         }
     }
 
 
-    public async Task Parse()
+    private void processHTML(string html, string url)
     {
 
-        status = ParserStatus.Processing;
 
-        string url, html;
-        while (to_check.Any() && (visited.Count() < page_limit) && status == ParserStatus.Processing)
+        var finded_domain_links = LinkFinder.getDomainLinks(html, $"https://{url}", url);
+        Console.WriteLine($"domain links: {finded_domain_links.Count()}");
+        foreach (string domain_url in finded_domain_links)
         {
-            url = to_check.Pop();
-            if (!visited.Contains(url))
-            {
-                Console.WriteLine($"Скачивание: {url}");
-                visited.Add(url);
-                Task<string> t = getHTML($"https://{url}");
-                await t;
-                if (t.IsCompletedSuccessfully)
-                {
-                    Console.WriteLine("Успешно");
+            DomainTree.Add(domain_url);
+            to_check.Push(domain_url);
+        }
+    }
 
-                    html = t.Result;
- 
-                }
-                else
-                {
-                    new_page_notifier?.Invoke($"Ошибка:{url}");
-                    throw t.Exception;
-                }
-                break;
-            }
+    private async Task processNextLink()
+    {
+        string url, html;
+        url = to_check.Pop();
+
+        if (visited.Contains(url))
+            return;
+
+        visited.Add(url);
+        Console.WriteLine($"https://{url}");
+        Task<string> t = pd.getHTML($"https://{url}");
+        await t;
+        html = t.Result;
+
+        if (html != "")
+        {
+            processHTML(html, url);
+        }
+        else
+        {
+            new_page_notifier?.Invoke($"Ошибка:{url} ");
+						Console.WriteLine($"Ошибка {url}");
+        }
+    }
+
+
+
+
+
+
+    public async void StartParsing()
+    {
+        Status = ParserStatus.Processing;
+
+        while (to_check.Any() && (visited.Count() < page_limit) && Status == ParserStatus.Processing)
+        {
+            await processNextLink();
+            Console.WriteLine($"to_check_size:{to_check.Count()}");
+
+            Console.WriteLine($"tree_size:{DomainTree.Count()}");
+            Console.Write("\n\n\n");
+						Console.ReadLine();
         }
 
-
-        if (status == ParserStatus.Stopping)
-            status = ParserStatus.Paused;
+        if (Status == ParserStatus.Stopping)
+            Status = ParserStatus.Paused;
         else
-            status = ParserStatus.Done;
-
+            Status = ParserStatus.Done;
     }
 
 
     public void PauseToggle()
     {
-        switch (status)
+        switch (Status)
         {
             case ParserStatus.Processing:
-                status = ParserStatus.Stopping;
+                Status = ParserStatus.Stopping;
                 break;
 
             case ParserStatus s when
                             s == ParserStatus.Paused || s == ParserStatus.Waiting:
-                Parse();
+                StartParsing();
                 break;
         }
     }
@@ -174,34 +197,7 @@ public class Parser
         Waiting, Processing, Paused, Error, Stopping, Done
     }
 
-    private async Task<string> getHTML(string url)
-    {
-        while ((DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) - last_request < request_delay)
-            await Task.Delay(10);
-        var result = await getHTML_Unsafe(url);
-        last_request = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        return result;
-    }
 
-    private async Task<string> getHTML_Unsafe(string url)
-    {
-        new_page_notifier?.Invoke(url);
-        try
-        {
-            using (HttpClient client = new HttpClient())
-            using (HttpResponseMessage response = await client.GetAsync(url))
-            using (HttpContent content = response.Content)
-            {
-                var result = await content.ReadAsStringAsync();
-                return result;
-            }
-        }
-        catch (Exception e)
-        {
-            warning_notifier?.Invoke($"Ошибка получения страницы: {url} {e.StackTrace}");
-            return null;
-        }
-    }
 
 
 

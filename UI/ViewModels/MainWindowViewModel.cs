@@ -34,13 +34,26 @@ public class MainWindowViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _IsProcessing, value);
     }
 
+    private bool _IsWaiting;
+    public bool IsWaiting
+    {
+        get => _IsWaiting;
+        set => this.RaiseAndSetIfChanged(ref _IsWaiting, value);
+    }
 
     private Parser.ParserStatus _ParserStatusDescr;
 
     public Parser.ParserStatus ParserStatus
     {
         get => _ParserStatusDescr;
-        set => this.RaiseAndSetIfChanged(ref _ParserStatusDescr, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _ParserStatusDescr, value);
+
+            IsProcessing = value == Parser.ParserStatus.Processing;
+            IsWaiting = value == Parser.ParserStatus.Waiting;
+            IsProcessing = value == Parser.ParserStatus.Processing ? true : false;
+        }
     }
 
 
@@ -119,13 +132,13 @@ public class MainWindowViewModel : ViewModelBase
     }
     public MainWindowViewModel()
     {
-                IsProcessing = false;
         ReadyToRun = false;
         URL = "https://ssau.ru";
         StartButtonText = "Построить граф";
         LinkVisitedCounter = 0;
         parser = new Parser();
-				RPMLimit = 120;
+				ParserStatus = parser.Status;
+        RPMLimit = 120;
         PageLimit = 500;
         parser.AddNewPageNotifier(UpdateCurrentLink);
         parser.AddStatusChangedNotifier(UpdateParserStatusDescr);
@@ -161,7 +174,7 @@ public class MainWindowViewModel : ViewModelBase
     public void UpdateCurrentLink(string url)
     {
         CurrentURL = url;
-        LinkVisitedCounter++;
+        LinkVisitedCounter = parser.visited.Count();
     }
 
 

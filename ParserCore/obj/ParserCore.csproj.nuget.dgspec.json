@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/fizlrock/datadrive/Docs/backup/code_backup/university/csharp_parser/ParserCore/ParserCore.csproj": {}
+    "/home/fizlrock/datadrive/files/backup/code_backup/university/parser/cp/ParserCore/ParserCore.csproj": {}
   },
   "projects": {
-    "/home/fizlrock/datadrive/Docs/backup/code_backup/university/csharp_parser/ParserCore/ParserCore.csproj": {
+    "/home/fizlrock/datadrive/files/backup/code_backup/university/parser/cp/ParserCore/ParserCore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/fizlrock/datadrive/Docs/backup/code_backup/university/csharp_parser/ParserCore/ParserCore.csproj",
+        "projectUniqueName": "/home/fizlrock/datadrive/files/backup/code_backup/university/parser/cp/ParserCore/ParserCore.csproj",
         "projectName": "ParserCore",
-        "projectPath": "/home/fizlrock/datadrive/Docs/backup/code_backup/university/csharp_parser/ParserCore/ParserCore.csproj",
+        "projectPath": "/home/fizlrock/datadrive/files/backup/code_backup/university/parser/cp/ParserCore/ParserCore.csproj",
         "packagesPath": "/home/fizlrock/.nuget/packages/",
-        "outputPath": "/home/fizlrock/datadrive/Docs/backup/code_backup/university/csharp_parser/ParserCore/obj/",
+        "outputPath": "/home/fizlrock/datadrive/files/backup/code_backup/university/parser/cp/ParserCore/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/fizlrock/.nuget/NuGet/NuGet.Config"

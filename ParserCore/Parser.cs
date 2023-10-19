@@ -39,8 +39,8 @@ public class Parser
 
 
 
-    private Stack<string> to_check;
-    private HashSet<string> visited;
+    public Stack<string> to_check{ private set; get; }
+    public HashSet<string> visited { private set; get; }
     public List<Link> Graph { private set; get; }
     public HashSet<string> DomainTree { private set; get; }
     public HashSet<string> DomainImages { private set; get; }
@@ -115,59 +115,64 @@ public class Parser
     private void processHTML(string html, string url)
     {
 
+        var links = LinkFinder.findAndFormatUrls(html, root_url);
+        var sorted_links = LinkFinder.sortLinks(links, root_url);
 
-        var finded_domain_links = LinkFinder.getDomainLinks(html, $"https://{url}", url);
-        Console.WriteLine($"domain links: {finded_domain_links.Count()}");
-        foreach (string domain_url in finded_domain_links)
-        {
-            DomainTree.Add(domain_url);
-            to_check.Push(domain_url);
-        }
+        var domain_urls = sorted_links
+                            .Where(l => l.Type == LinkType.Domain)
+                            .Where(l => l.ContentType == LinkContentType.None)
+                            .Select(l => l.URL);
+
+        DomainTree.UnionWith(domain_urls);
+        foreach (string link in domain_urls)
+            to_check.Push(link);
+
     }
 
     private async Task processNextLink()
     {
-        string url, html;
+        string url, html = "";
         url = to_check.Pop();
 
         if (visited.Contains(url))
             return;
 
         visited.Add(url);
-        Console.WriteLine($"https://{url}");
-        Task<string> t = pd.getHTML($"https://{url}");
-        await t;
-        html = t.Result;
 
-        if (html != "")
+        new_page_notifier?.Invoke(url);
+
+        int attempt_counter = 0;
+        do
         {
-            processHTML(html, url);
+            var t = pd.getHTML($"https://{url}");
+            await t;
+            if (t.IsCompletedSuccessfully)
+                html = t.Result;
+            attempt_counter++;
         }
-        else
+        while (attempt_counter < 5 && html == "");
+
+        if (attempt_counter > 5)
         {
             new_page_notifier?.Invoke($"Ошибка:{url} ");
-						Console.WriteLine($"Ошибка {url}");
+            Console.WriteLine($"Ошибка {url}");
+            return;
         }
+
+
+        processHTML(html, url);
     }
 
 
 
 
 
-
-    public async void StartParsing()
+    public async Task StartParsing()
     {
         Status = ParserStatus.Processing;
 
         while (to_check.Any() && (visited.Count() < page_limit) && Status == ParserStatus.Processing)
-        {
             await processNextLink();
-            Console.WriteLine($"to_check_size:{to_check.Count()}");
-
-            Console.WriteLine($"tree_size:{DomainTree.Count()}");
-            Console.Write("\n\n\n");
-						Console.ReadLine();
-        }
 
         if (Status == ParserStatus.Stopping)
             Status = ParserStatus.Paused;

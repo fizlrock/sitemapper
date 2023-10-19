@@ -132,6 +132,7 @@
 				Background="#cecece"
 				Margin="10"
 				Padding="10"
+				IsVisible="{Binding !IsWaiting}"
 			>
 				<StackPanel Spacing="10">
 					<TextBlock Text="{Binding ParserStatus, StringFormat='Статус: {0}'}"

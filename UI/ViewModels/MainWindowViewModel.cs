@@ -130,22 +130,33 @@ public class MainWindowViewModel : ViewModelBase
         get => _LinkVisitedCounter!;
         set => this.RaiseAndSetIfChanged(ref _LinkVisitedCounter, value);
     }
+
+
+
+    private int _DomainTreeSize;
+    public int DomainTreeSize
+    {
+        get => _DomainTreeSize!;
+        set => this.RaiseAndSetIfChanged(ref _DomainTreeSize, value);
+    }
+
+    private int _ToCheckSize;
+    public int ToCheckSize
+    {
+        get => _ToCheckSize!;
+        set => this.RaiseAndSetIfChanged(ref _ToCheckSize, value);
+    }
+
     public MainWindowViewModel()
     {
-        ReadyToRun = false;
-        URL = "https://ssau.ru";
-        StartButtonText = "Построить граф";
-        LinkVisitedCounter = 0;
         parser = new Parser();
-				ParserStatus = parser.Status;
-        RPMLimit = 120;
-        PageLimit = 500;
         parser.AddNewPageNotifier(UpdateCurrentLink);
         parser.AddStatusChangedNotifier(UpdateParserStatusDescr);
+				ResetButton();
     }
 
 
-    public async void StartButton()
+    public void StartButton()
     {
         switch (ParserStatus)
         {
@@ -175,6 +186,8 @@ public class MainWindowViewModel : ViewModelBase
     {
         CurrentURL = url;
         LinkVisitedCounter = parser.visited.Count();
+        DomainTreeSize = parser.DomainTree.Count();
+        ToCheckSize = parser.to_check.Count();
     }
 
 
@@ -195,6 +208,19 @@ public class MainWindowViewModel : ViewModelBase
         DomainLinks = String.Join("\n", parser.DomainTree);
         DomainImages = parser.DomainImages.ToArray();
 
+    }
+
+
+    public void ResetButton()
+    {
+				parser.Reset();
+        ReadyToRun = false;
+        URL = "ssau.ru";
+        StartButtonText = "Построить граф";
+        LinkVisitedCounter = 0;
+        ParserStatus = parser.Status;
+        RPMLimit = 120;
+        PageLimit = 500;
     }
 }
 

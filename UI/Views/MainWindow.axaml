@@ -21,7 +21,7 @@
 	</Design.DataContext>
 
 	<Grid
-		ColumnDefinitions="1*, 2*"
+		ColumnDefinitions="300, Auto"
 	>
 		<StackPanel
 			Grid.Column="0"
@@ -134,16 +134,40 @@
 				Padding="10"
 				IsVisible="{Binding !IsWaiting}"
 			>
+				<!--IsVisible="{Binding
+				!IsWaiting}" -->
 				<StackPanel Spacing="10">
 					<TextBlock Text="{Binding ParserStatus, StringFormat='Статус: {0}'}"
 						TextAlignment="Center" />
 
 					<TextBlock Text="{Binding CurrentURL, StringFormat='Адрес на обработке: {0}'}"
 						TextAlignment="Center" TextWrapping="Wrap" IsVisible="{Binding IsProcessing}" />
+
 					<TextBlock
 						TextAlignment="Center"
-						Text="{Binding LinkVisitedCounter, StringFormat='Посещено страниц: {0}'}"
+						Text="{Binding LinkVisitedCounter, StringFormat='Посещено страниц: {0}'}" />
+
+					<TextBlock
+						TextAlignment="Center"
+						Text="{Binding DomainTreeSize, StringFormat='Корневых ссылок найдено: {0}'}" />
+
+					<TextBlock
+						TextAlignment="Center"
+						Text="{Binding ToCheckSize, StringFormat='Ссылок для проверки: {0}'}" />
+
+
+					<Button
+						HorizontalAlignment="Stretch"
+						Height="30"
+						Background="#bb5859"
+						Command="{Binding ResetButton}"
+					>
+						<TextBlock
+							Text="Сброс"
+							TextAlignment="Center"
 						/>
+
+					</Button>
 
 				</StackPanel>
 			</Border>

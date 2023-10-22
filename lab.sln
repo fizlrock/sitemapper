@@ -9,6 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IterTests", "IterTests\Iter
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI", "UI\UI.csproj", "{72D0DDB7-BFF0-4CF5-BE51-A3C8FE748AFB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeBuilder", "TreeBuilder\TreeBuilder.csproj", "{D42CC360-4FFF-4EEA-8AD2-44A0EE9719CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,5 +36,9 @@ Global
 		{996B07F0-FF3F-45AE-B5C9-6D53DC9465BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{996B07F0-FF3F-45AE-B5C9-6D53DC9465BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{996B07F0-FF3F-45AE-B5C9-6D53DC9465BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D42CC360-4FFF-4EEA-8AD2-44A0EE9719CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D42CC360-4FFF-4EEA-8AD2-44A0EE9719CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D42CC360-4FFF-4EEA-8AD2-44A0EE9719CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D42CC360-4FFF-4EEA-8AD2-44A0EE9719CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

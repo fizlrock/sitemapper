@@ -1,5 +1,4 @@
 ﻿using ParserCore;
-using LinkProcessor;
 
 public class Programm
 {
@@ -10,13 +9,7 @@ public class Programm
 
 
 
-    static void treeBuilderTests()
-    {
-        TreeBuilder tb = new TreeBuilder();
-        tb.loadLinksFromFile("./tree_builder_tests.txt");
-        tb.buildTree();
-
-    }
+    
 
 
     static void linkFinderTests()

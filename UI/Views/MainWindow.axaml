@@ -1,6 +1,7 @@
 <Window
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:agc="clr-namespace:AvaloniaGraphControl;assembly=AvaloniaGraphControl"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:wpf="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
 	xmlns:vm="using:UI.ViewModels"
@@ -178,6 +179,28 @@
 			Margin="10"
 		>
 			<TabItem Header="Граф">
+				<!--
+				<ScrollViewer
+					HorizontalScrollBarVisibility="Auto"
+					VerticalScrollBarVisibility="Auto"
+				>
+				</ScrollViewer> -->
+				<ZoomBorder
+					x:Name="ZoomBorder"
+					Stretch="Uniform"
+					ZoomSpeed="1.2"
+					ClipToBounds="True"
+					Focusable="True"
+					Background="White"
+					VerticalAlignment="Stretch"
+					HorizontalAlignment="Stretch"
+				>
+					<agc:GraphPanel
+						Graph="{Binding MyGraph}"
+						LayoutMethod="SugiyamaScheme"
+					/>
+				</ZoomBorder>
+
 			</TabItem>
 			<TabItem Header="Список ссылок">
 				<TextBox Text="{Binding DomainLinks}" />

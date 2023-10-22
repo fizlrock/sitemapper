@@ -1,9 +1,11 @@
 ﻿using ReactiveUI;
+using AvaloniaGraphControl;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using UI.Models;
 using ParserCore;
 namespace UI.ViewModels;
 
@@ -147,12 +149,21 @@ public class MainWindowViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _ToCheckSize, value);
     }
 
+    private LinkProcessor lp;
+
+    private Graph _MyGraph;
+    public Graph MyGraph
+    {
+        get => _MyGraph;
+        set => this.RaiseAndSetIfChanged(ref _MyGraph, value);
+    }
     public MainWindowViewModel()
     {
         parser = new Parser();
+        lp = new LinkProcessor();
         parser.AddNewPageNotifier(UpdateCurrentLink);
         parser.AddStatusChangedNotifier(UpdateParserStatusDescr);
-				ResetButton();
+        ResetButton();
     }
 
 
@@ -205,15 +216,19 @@ public class MainWindowViewModel : ViewModelBase
                 await Task.Delay(10);
         }
 
-        DomainLinks = String.Join("\n", parser.DomainTree);
+				var sorted_links = parser.DomainTree.OrderBy(x => x.Length);
+
+        DomainLinks = String.Join("\n", sorted_links);
         DomainImages = parser.DomainImages.ToArray();
+
+        MyGraph = lp.generateGraph(sorted_links.ToArray());
 
     }
 
 
     public void ResetButton()
     {
-				parser.Reset();
+        parser.Reset();
         ReadyToRun = false;
         URL = "ssau.ru";
         StartButtonText = "Построить граф";

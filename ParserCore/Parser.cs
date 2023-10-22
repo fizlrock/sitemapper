@@ -39,7 +39,7 @@ public class Parser
 
 
 
-    public Stack<string> to_check{ private set; get; }
+    public Stack<string> to_check { private set; get; }
     public HashSet<string> visited { private set; get; }
     public List<Link> Graph { private set; get; }
     public HashSet<string> DomainTree { private set; get; }
@@ -86,10 +86,11 @@ public class Parser
         get => page_limit;
         set
         {
-            if (Status != ParserStatus.Waiting)
+            if (Status == ParserStatus.Processing)
                 throw new Exception("Редактирование настроек допустимо только в режиме ожидания");
             if (value <= 0)
                 throw new ArgumentException("Ограничение на кол-во посещенных страниц должно быть больше нуля");
+            Console.WriteLine($"page_limit_changed: {value}");
             page_limit = value;
         }
     }
@@ -103,10 +104,11 @@ public class Parser
         }
         set
         {
-            if (Status != ParserStatus.Waiting)
+            if (Status == ParserStatus.Processing)
                 throw new Exception("Редактирование настроек допустимо только в режиме ожидания");
             if (value <= 0)
                 throw new ArgumentException("Ограничение на кол-во запросов в минуту должно быть больше нуля");
+            Console.WriteLine($"RPM changed:{value}");
             pd.requestDelay = 60000 / value;
         }
     }
@@ -150,17 +152,16 @@ public class Parser
                 html = t.Result;
             attempt_counter++;
         }
-        while (attempt_counter < 5 && html == "");
+        while (attempt_counter < 2 && html == "");
 
-        if (attempt_counter > 5)
+        if (attempt_counter > 2 && html == "")
         {
             new_page_notifier?.Invoke($"Ошибка:{url} ");
             Console.WriteLine($"Ошибка {url}");
             return;
         }
-
-
-        processHTML(html, url);
+        else
+            processHTML(html, url);
     }
 
 
@@ -172,11 +173,15 @@ public class Parser
         Status = ParserStatus.Processing;
 
         while (to_check.Any() && (visited.Count() < page_limit) && Status == ParserStatus.Processing)
-            await processNextLink();
+        {
+            Task t = processNextLink();
+            await t;
+            if (t.Exception != null)
+							Console.WriteLine(t.Exception.StackTrace);
+        }
 
-        if (Status == ParserStatus.Stopping)
-            Status = ParserStatus.Paused;
-        else
+        Status = ParserStatus.Paused;
+        if (!to_check.Any())
             Status = ParserStatus.Done;
     }
 

@@ -119,8 +119,8 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private string[] _DomainImages;
-    public string[] DomainImages
+    private string _DomainImages;
+    public string DomainImages
     {
         get => _DomainImages!;
         set => this.RaiseAndSetIfChanged(ref _DomainImages, value);
@@ -219,7 +219,7 @@ public class MainWindowViewModel : ViewModelBase
 				var sorted_links = parser.DomainTree.OrderBy(x => x.Length);
 
         DomainLinks = String.Join("\n", sorted_links);
-        DomainImages = parser.DomainImages.ToArray();
+        DomainImages = String.Join("\n", parser.DomainImages);
 
         MyGraph = lp.generateGraph(sorted_links.ToArray());
 

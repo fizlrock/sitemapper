@@ -124,8 +124,14 @@ public class Parser
                             .Where(l => l.Type == LinkType.Domain)
                             .Where(l => l.ContentType == LinkContentType.None)
                             .Select(l => l.URL);
-
         DomainTree.UnionWith(domain_urls);
+
+				var domain_images= sorted_links
+                            .Where(l => l.Type == LinkType.Domain)
+                            .Where(l => l.ContentType == LinkContentType.Image)
+                            .Select(l => l.URL);
+        DomainImages.UnionWith(domain_images);
+
         foreach (string link in domain_urls)
             to_check.Push(link);
 

@@ -203,10 +203,10 @@
 
 			</TabItem>
 			<TabItem Header="Список ссылок">
-				<TextBox Text="{Binding DomainLinks}" />
+				<TextBox IsReadOnly="True" Text="{Binding DomainLinks}" />
 			</TabItem>
 			<TabItem Header="Список изображений">
-				<TextBox Watermark="ReadOnly" IsReadOnly="True" Text="https://ssau.ru/rasp/dick.png" />
+				<TextBox  IsReadOnly="True" Text="{Binding DomainImages}" />
 			</TabItem>
 		</TabControl>
 

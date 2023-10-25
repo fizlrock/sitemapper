@@ -22,7 +22,7 @@
 	</Design.DataContext>
 
 	<Grid
-		ColumnDefinitions="300, Auto"
+		ColumnDefinitions="300, *"
 	>
 		<StackPanel
 			Grid.Column="0"

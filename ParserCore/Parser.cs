@@ -31,6 +31,7 @@ public class Parser
         visited = new HashSet<string>();
         DomainTree = new HashSet<string>();
         DomainImages = new HashSet<string>();
+        ExternalImages = new HashSet<string>();
         Status = ParserStatus.Waiting;
         root_url = "";
         Graph = new List<Link>();
@@ -44,6 +45,7 @@ public class Parser
     public List<Link> Graph { private set; get; }
     public HashSet<string> DomainTree { private set; get; }
     public HashSet<string> DomainImages { private set; get; }
+    public HashSet<string> ExternalImages { private set; get; }
 
 
 
@@ -126,11 +128,17 @@ public class Parser
                             .Select(l => l.URL);
         DomainTree.UnionWith(domain_urls);
 
-				var domain_images= sorted_links
-                            .Where(l => l.Type == LinkType.Domain)
-                            .Where(l => l.ContentType == LinkContentType.Image)
-                            .Select(l => l.URL);
+        var domain_images = sorted_links
+                    .Where(l => l.Type == LinkType.Domain)
+                    .Where(l => l.ContentType == LinkContentType.Image)
+                    .Select(l => l.URL);
         DomainImages.UnionWith(domain_images);
+
+        var ext_images = sorted_links
+                                    .Where(l => l.Type == LinkType.External)
+                                    .Where(l => l.ContentType == LinkContentType.Image)
+                                    .Select(l => l.URL);
+        ExternalImages.UnionWith(ext_images);
 
         foreach (string link in domain_urls)
             to_check.Push(link);
@@ -183,7 +191,7 @@ public class Parser
             Task t = processNextLink();
             await t;
             if (t.Exception != null)
-							Console.WriteLine(t.Exception.StackTrace);
+                Console.WriteLine(t.Exception.StackTrace);
         }
 
         Status = ParserStatus.Paused;

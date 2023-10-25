@@ -126,6 +126,12 @@ public class MainWindowViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _DomainImages, value);
     }
 
+    private string _ExternalImages;
+    public string ExternalImages
+    {
+        get => _ExternalImages!;
+        set => this.RaiseAndSetIfChanged(ref _ExternalImages, value);
+    }
     private int _LinkVisitedCounter;
     public int LinkVisitedCounter
     {
@@ -216,10 +222,11 @@ public class MainWindowViewModel : ViewModelBase
                 await Task.Delay(10);
         }
 
-				var sorted_links = parser.DomainTree.OrderBy(x => x.Length);
+        var sorted_links = parser.DomainTree.OrderBy(x => x.Length);
 
         DomainLinks = String.Join("\n", sorted_links);
         DomainImages = String.Join("\n", parser.DomainImages);
+        ExternalImages = String.Join("\n", parser.ExternalImages);
 
         MyGraph = lp.generateGraph(sorted_links.ToArray());
 

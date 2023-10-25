@@ -203,11 +203,17 @@
 
 			</TabItem>
 			<TabItem Header="Список ссылок">
-				<TextBox IsReadOnly="True" Text="{Binding DomainLinks}" />
+				<TextBox FontSize ="18" IsReadOnly="True" Text="{Binding DomainLinks}" />
 			</TabItem>
-			<TabItem Header="Список изображений">
-				<TextBox  IsReadOnly="True" Text="{Binding DomainImages}" />
+			<TabItem Header="Список доменных изображений">
+				<TextBox  FontSize ="18" IsReadOnly="True" Text="{Binding DomainImages}" />
+				</TabItem>
+
+
+				<TabItem Header="Список внешних изображений">
+				<TextBox  FontSize ="18" IsReadOnly="True" Text="{Binding ExternalImages}" />
 			</TabItem>
+
 		</TabControl>
 
 	</Grid>

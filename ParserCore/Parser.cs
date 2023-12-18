@@ -173,6 +173,7 @@ public class Parser
             new_page_notifier?.Invoke($"Ошибка:{url} ");
             Console.WriteLine($"Ошибка {url}");
             return;
+					
         }
         else
             processHTML(html, url);

@@ -115,11 +115,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/fizlrock/data/files/backup/code_backup/university/parser/cp/ParserCore/ParserCore.csproj",
+      "projectUniqueName": "/home/fizlrock/data/files/backup/code_backup/university/net/parser/cp/ParserCore/ParserCore.csproj",
       "projectName": "ParserCore",
-      "projectPath": "/home/fizlrock/data/files/backup/code_backup/university/parser/cp/ParserCore/ParserCore.csproj",
+      "projectPath": "/home/fizlrock/data/files/backup/code_backup/university/net/parser/cp/ParserCore/ParserCore.csproj",
       "packagesPath": "/home/fizlrock/.nuget/packages/",
-      "outputPath": "/home/fizlrock/data/files/backup/code_backup/university/parser/cp/ParserCore/obj/",
+      "outputPath": "/home/fizlrock/data/files/backup/code_backup/university/net/parser/cp/ParserCore/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/fizlrock/.nuget/NuGet/NuGet.Config"
@@ -165,7 +165,11 @@
         "downloadDependencies": [
           {
             "name": "Microsoft.AspNetCore.App.Ref",
-            "version": "[7.0.12, 7.0.12]"
+            "version": "[7.0.14, 7.0.14]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[7.0.14, 7.0.14]"
           }
         ],
         "frameworkReferences": {
@@ -173,7 +177,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/7.0.112/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.100/RuntimeIdentifierGraph.json"
       }
     }
   }
